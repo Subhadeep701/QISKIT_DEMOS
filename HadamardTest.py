@@ -1,5 +1,4 @@
 from qiskit import QuantumCircuit,transpile
-from qiskit.circuit.library.standard_gates.equivalence_library import qargs
 from qiskit.quantum_info import Statevector,random_unitary
 from qiskit.circuit.library import StatePreparation,UnitaryGate
 from qiskit.primitives import StatevectorSampler, StatevectorEstimator
