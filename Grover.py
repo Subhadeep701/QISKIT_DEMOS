@@ -34,21 +34,31 @@ def grover_oracle(marked_states):
 
     for target in marked_states:
         rev_target = target[::-1]
-        zero_inds = [i for i, bit in enumerate(rev_target) if bit == "0"]
 
-        # Apply X gates to flip '0' bits
-        qc.x(zero_inds)
+        # Handle the all-1 state separately
+        if all(bit == "1" for bit in rev_target):
+            # Directly apply multi-controlled Z gate
+            qc.h(num_qubits - 1)
+            qc.mcx(list(range(num_qubits - 1)), num_qubits - 1)
+            qc.h(num_qubits - 1)
+        else:
+            # Find the indices of all '0' elements in the bit-string
+            zero_inds = [i for i, bit in enumerate(rev_target) if bit == "0"]
 
-        # Apply multi-controlled Z gate
-        qc.h(num_qubits - 1)
-        qc.mcx(list(range(num_qubits - 1)), num_qubits - 1)
-        qc.h(num_qubits - 1)
+            # Apply X gates to flip '0' bits
+            qc.x(zero_inds)
 
-        # Undo the X gates
-        qc.x(zero_inds)
+            # Apply multi-controlled Z gate
+            qc.h(num_qubits - 1)
+            qc.mcx(list(range(num_qubits - 1)), num_qubits - 1)
+            qc.h(num_qubits - 1)
+
+            # Undo the X gates
+            qc.x(zero_inds)
+
+        qc.barrier()
 
     return qc
-
 
 def apply_reflection_about_mean(qc, n):
     """
@@ -71,7 +81,7 @@ def apply_reflection_about_mean(qc, n):
 
 # Parameters
 n = 3
-marked_states = ["011", "100", "101"]
+marked_states = ["110","111"]
 
 # Build the Grover oracle
 oracle = grover_oracle(marked_states)
